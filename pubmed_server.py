@@ -10,9 +10,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # Initialize FastMCP server
 mcp = FastMCP("pubmed")
 
-@mcp.tool()
+@mcp.tool(description="Search for articles on PubMed using key words.")
 async def search_pubmed_key_words(key_words: str, num_results: int = 10) -> List[Dict[str, Any]]:
-    logging.info(f"Searching for articles with key words: {key_words}, num_results: {num_results}")
     """
     Search for articles on PubMed using key words.
 
@@ -23,13 +22,15 @@ async def search_pubmed_key_words(key_words: str, num_results: int = 10) -> List
     Returns:
         List of dictionaries containing article information
     """
+    logging.info(f"Searching for articles with key words: {key_words}, num_results: {num_results}")
+
     try:
         results = await asyncio.to_thread(search_key_words, key_words, num_results)
         return results
     except Exception as e:
         return [{"error": f"An error occurred while searching: {str(e)}"}]
 
-@mcp.tool()
+@mcp.tool(description="Perform an advanced search for articles on PubMed.")
 async def search_pubmed_advanced(
     term: Optional[str] = None,
     title: Optional[str] = None,
@@ -39,7 +40,6 @@ async def search_pubmed_advanced(
     end_date: Optional[str] = None,
     num_results: int = 10
 ) -> List[Dict[str, Any]]:
-    logging.info(f"Performing advanced search with parameters: {locals()}")
     """
     Perform an advanced search for articles on PubMed.
 
@@ -55,6 +55,8 @@ async def search_pubmed_advanced(
     Returns:
         List of dictionaries containing article information
     """
+    logging.info(f"Performing advanced search with parameters: {locals()}")
+
     try:
         results = await asyncio.to_thread(
             search_advanced,
@@ -64,9 +66,8 @@ async def search_pubmed_advanced(
     except Exception as e:
         return [{"error": f"An error occurred while performing advanced search: {str(e)}"}]
 
-@mcp.tool()
+@mcp.tool(description="Fetch metadata for a PubMed article using its PMID.")
 async def get_pubmed_article_metadata(pmid: Union[str, int]) -> Dict[str, Any]:
-    logging.info(f"Fetching metadata for PMID: {pmid}")
     """
     Fetch metadata for a PubMed article using its PMID.
 
@@ -76,6 +77,8 @@ async def get_pubmed_article_metadata(pmid: Union[str, int]) -> Dict[str, Any]:
     Returns:
         Dictionary containing article metadata
     """
+    logging.info(f"Fetching metadata for PMID: {pmid}")
+
     try:
         pmid_str = str(pmid)
         metadata = await asyncio.to_thread(get_pubmed_metadata, pmid_str)
@@ -83,9 +86,8 @@ async def get_pubmed_article_metadata(pmid: Union[str, int]) -> Dict[str, Any]:
     except Exception as e:
         return {"error": f"An error occurred while fetching metadata: {str(e)}"}
 
-@mcp.tool()
+@mcp.tool(description="Attempt to download the full text PDF for a PubMed article.")
 async def download_pubmed_pdf(pmid: Union[str, int]) -> str:
-    logging.info(f"Attempting to download PDF for PMID: {pmid}")
     """
     Attempt to download the full text PDF for a PubMed article.
 
@@ -95,6 +97,8 @@ async def download_pubmed_pdf(pmid: Union[str, int]) -> str:
     Returns:
         String indicating the result of the download attempt
     """
+    logging.info(f"Attempting to download PDF for PMID: {pmid}")
+
     try:
         pmid_str = str(pmid)
         result = await asyncio.to_thread(download_full_text_pdf, pmid_str)
@@ -104,7 +108,6 @@ async def download_pubmed_pdf(pmid: Union[str, int]) -> str:
 
 @mcp.prompt()
 async def deep_paper_analysis(pmid: Union[str, int]) -> Dict[str, str]:
-    logging.info(f"Performing deep paper analysis for PMID: {pmid}")
     """
     Perform a comprehensive analysis of a PubMed article.
 
@@ -114,6 +117,8 @@ async def deep_paper_analysis(pmid: Union[str, int]) -> Dict[str, str]:
     Returns:
         Dictionary containing the comprehensive analysis structure
     """
+
+    logging.info(f"Performing deep paper analysis for PMID: {pmid}")
     try:
         pmid_str = str(pmid)
         metadata = await asyncio.to_thread(get_pubmed_metadata, pmid_str)
